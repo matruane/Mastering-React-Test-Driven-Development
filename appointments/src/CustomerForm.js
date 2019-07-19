@@ -4,7 +4,7 @@ export const CustomerForm = ({
   firstName,
   lastName,
   phoneNumber,
-  onSubmit
+  fetch
 }) => {
   const [customer, setCustomer] = useState({
     firstName,
@@ -18,8 +18,17 @@ export const CustomerForm = ({
       [target.name]: target.value
     }));
 
+  const handleSubmit = () => {
+    fetch('/customers', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(customer)
+    });
+  };
+
   return (
-    <form id="customer" onSubmit={() => onSubmit(customer)}>
+    <form id="customer" onSubmit={handleSubmit}>
       <label htmlFor="firstName">First name</label>
       <input
         type="text"
@@ -50,4 +59,8 @@ export const CustomerForm = ({
       <input type="submit" value="Add" />
     </form>
   );
+};
+
+CustomerForm.defaultProps = {
+  fetch: async () => {}
 };
