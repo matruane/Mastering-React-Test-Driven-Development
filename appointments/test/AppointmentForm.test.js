@@ -116,6 +116,11 @@ describe('AppointmentForm', () => {
     const timeSlotTable = () =>
       container.querySelector('table#time-slots');
 
+    const startsAtField = index =>
+      container.querySelectorAll(`input[name="startsAt"]`)[
+        index
+      ];
+
     it('renders a table for time slots', () => {
       render(<AppointmentForm />);
       expect(timeSlotTable()).not.toBeNull();
@@ -173,6 +178,33 @@ describe('AppointmentForm', () => {
       expect(
         cells[7].querySelector('input[type="radio"]')
       ).not.toBeNull();
+    });
+
+    it('does not render radio buttons for unavailable time slots', () => {
+      render(<AppointmentForm availableTimeSlots={[]} />);
+      const timesOfDay = timeSlotTable().querySelectorAll(
+        'input'
+      );
+      expect(timesOfDay).toHaveLength(0);
+    });
+
+    it('sets radio button values to the index of the corresponsing appointment', () => {
+      const today = new Date();
+      const availableTimeSlots = [
+        { startsAt: today.setHours(9, 0, 0, 0) },
+        { startsAt: today.setHours(9, 30, 0, 0) }
+      ];
+      render(
+        <AppointmentForm
+          availableTimeSlots={availableTimeSlots}
+          today={today}
+        />);
+      expect(startsAtField(0).value).toEqual(
+        availableTimeSlots[0].startsAt.toString()
+      );
+      expect(startsAtField(1).value).toEqual(
+        availableTimeSlots[1].startsAt.toString()
+      );
     });
   });
   
